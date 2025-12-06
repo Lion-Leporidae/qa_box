@@ -512,7 +512,7 @@
                          
                          <!-- Content Layer -->
                          <div class="bg-black text-white px-3 py-[7px]">
-                             <span class="text-[10px] font-bold tracking-widest font-mono block text-center signature-text" style="line-height: 1;">FROM 037</span>
+                             <span class="text-[10px] font-bold tracking-widest font-mono block text-center signature-text" style="line-height: 1;">FROM 🦁🐰</span>
                          </div>
                      </div>
                  </div>
@@ -885,7 +885,7 @@ const downloadCardAsImage = async () => {
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.download = `qa-card-037-${Date.now()}.png`
+        link.download = `qa-card-🦁🐰-${Date.now()}.png`
         link.click()
         URL.revokeObjectURL(url)
         
