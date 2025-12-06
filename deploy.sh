@@ -29,6 +29,8 @@ HOST=${HOST:-127.0.0.1}
 PORT=${PORT:-18000}
 FRONTEND_PORT=${FRONTEND_PORT:-13000}
 WORKERS=${WORKERS:-2}
+PIP_INDEX_URL=${PIP_INDEX_URL:-"https://pypi.tuna.tsinghua.edu.cn/simple"}
+NPM_REGISTRY=${NPM_REGISTRY:-"https://registry.npmmirror.com"}
 
 # PID 文件
 BACKEND_PID_FILE="$SCRIPT_DIR/.backend.pid"
@@ -123,33 +125,48 @@ install_deps() {
         cd backend
         python3 -m venv .venv
         source .venv/bin/activate
-        pip install --upgrade pip -q
-        pip install -r requirements.txt -q
+        print_info "使用 PyPI 镜像: $PIP_INDEX_URL"
+        pip install --upgrade pip -q -i "$PIP_INDEX_URL"
+        pip install -r requirements.txt -q -i "$PIP_INDEX_URL"
         cd ..
     fi
     
     # 激活虚拟环境
     source backend/.venv/bin/activate
     
+    # 检查核心依赖
+    if ! pip show fastapi > /dev/null 2>&1; then
+        print_info "检测到依赖缺失，正在安装后端依赖..."
+        cd backend
+        pip install -r requirements.txt -q -i "$PIP_INDEX_URL"
+        cd ..
+    fi
+
     # 检查必要的包
     if ! pip show gunicorn > /dev/null 2>&1; then
         print_info "安装 gunicorn..."
-        pip install gunicorn -q
+        pip install gunicorn -q -i "$PIP_INDEX_URL"
+    fi
+
+    if ! pip show uvicorn > /dev/null 2>&1; then
+        print_info "安装 uvicorn..."
+        pip install "uvicorn[standard]" -q -i "$PIP_INDEX_URL"
     fi
     
     if ! pip show passlib > /dev/null 2>&1; then
         print_info "安装 passlib[bcrypt]..."
-        pip install "passlib[bcrypt]" -q
+        pip install "passlib[bcrypt]" -q -i "$PIP_INDEX_URL"
     fi
     
     # 前端依赖
     if [ ! -d "frontend/node_modules" ]; then
         print_info "安装前端依赖..."
         cd frontend
+        print_info "使用 NPM 镜像: $NPM_REGISTRY"
         if command -v pnpm &> /dev/null; then
-            pnpm install --silent
+            pnpm install --silent --registry "$NPM_REGISTRY"
         elif command -v npm &> /dev/null; then
-            npm install --silent
+            npm install --silent --registry "$NPM_REGISTRY"
         else
             print_error "未找到 pnpm 或 npm，请先安装"
             exit 1

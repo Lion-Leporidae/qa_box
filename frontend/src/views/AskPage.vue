@@ -80,7 +80,7 @@
                 </div>
 
                 <div class="mb-6 border-b-2 border-dashed border-gray-200 pb-4">
-                    <h2 class="text-2xl font-serif text-gray-800 font-bold md:block hidden">写信给林叁柒</h2>
+                    <h2 class="text-2xl font-serif text-gray-800 font-bold md:block hidden">写信给LionLeporidae</h2>
                     <div class="flex justify-between items-center text-sm text-gray-500 mt-1">
                         <span>From: 匿名朋友</span>
                         <span class="font-mono">{{ new Date().toLocaleDateString() }}</span>
